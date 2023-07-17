@@ -11,8 +11,6 @@
 
     <pre id="hash" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: URL hash</pre>
 
-    <pre id="secret" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: secret</pre>
-
     <pre id="header" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: JWT header</pre>
 
     <pre id="payload" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: JWT payload</pre>
@@ -45,9 +43,6 @@
       // Basic-Fit secret (?) key; can be extracted from the mobile application
       const secret = hashData['secret'];
 
-      const secret_div = document.getElementById('secret');
-      secret_div.innerHTML = secret;
-
       const jwtHeader = {
         "alg": "HS256",
         "typ": "JWT"
@@ -61,7 +56,8 @@
         "cardNr": hashData['cardNr'],
         "comId": hashData['comId'],
         "iat": Math.floor(generatedAt.getTime() / 1000),
-        "jti": crypto.randomUUID()
+        // From: https://gist.github.com/selfish/fef2c0ba6cdfe07af76e64cecd74888b
+        "jti": (()=>([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16)))()
       }
 
       const payload_div = document.getElementById('payload');
