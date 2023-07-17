@@ -13,9 +13,9 @@
 
     <pre id="header" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: JWT header</pre>
 
-    <pre id="payload" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: JWT payload</pre>
-
     <pre id="date" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: date</pre>
+
+    <pre id="payload" style="margin-bottom: 1rem; padding: .5rem; background: #eee; font-family: monospace;">error: JWT payload</pre>
 
     <pre id="jwt" style="margin-bottom: 2rem; padding: .5rem; background: #eee; font-family: monospace; text-overflow: none;">error: JWT</pre>
 
@@ -52,6 +52,10 @@
       header_div.innerHTML = JSON.stringify(jwtHeader);
 
       const generatedAt = new Date();
+
+      const date_div = document.getElementById('date');
+      date_div.innerHTML = Math.floor(generatedAt.getTime() / 1000) + ' // ' + generatedAt.toLocaleString();
+
       const jwtPayload = {
         "cardNr": hashData['cardNr'],
         "comId": hashData['comId'],
@@ -62,9 +66,6 @@
 
       const payload_div = document.getElementById('payload');
       payload_div.innerHTML = JSON.stringify(jwtPayload);
-
-      const date_div = document.getElementById('date');
-      date_div.innerHTML = generatedAt.toLocaleString();
 
       // HMAC-SHA256
       const signature = sign(
