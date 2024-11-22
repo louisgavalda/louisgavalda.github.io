@@ -21,7 +21,7 @@
 
     <div
       id="qrcode"
-      style="height: 512px; width: 512px; margin: 0 auto;"
+      style="height: 512px; width: 512px; margin: 0 auto; padding: 15%;"
     >
     </div>
 
@@ -51,39 +51,60 @@
       const header_div = document.getElementById('header');
       header_div.innerHTML = JSON.stringify(jwtHeader);
 
-      const generatedAt = new Date();
+      var generatedAt = new Date();
 
       const date_div = document.getElementById('date');
       date_div.innerHTML = Math.floor(generatedAt.getTime() / 1000) + ' // ' + generatedAt.toLocaleString();
 
-      const jwtPayload = {
-        "cardNr": hashData['cardNr'],
-        "comId": hashData['comId'],
-        "iat": Math.floor(generatedAt.getTime() / 1000),
-        // From: https://gist.github.com/selfish/fef2c0ba6cdfe07af76e64cecd74888b
-        "jti": (()=>([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16)))()
+      function generatePayload() {
+        return {
+          "cardNr": hashData['cardNr'],
+          "comId": hashData['comId'],
+          "iat": Math.floor(generatedAt.getTime() / 1000),
+          // From: https://gist.github.com/selfish/fef2c0ba6cdfe07af76e64cecd74888b
+          "jti": (()=>([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16)))()
+        }
       }
+
+      var jwtPayload = generatePayload();
 
       const payload_div = document.getElementById('payload');
       payload_div.innerHTML = JSON.stringify(jwtPayload);
 
-      // HMAC-SHA256
-      const signature = sign(
-        secret,
-        btoa(JSON.stringify(jwtHeader)) + '.' + btoa(JSON.stringify(jwtPayload))
-      );
-      const jwtSignature = String.fromCharCode(...new Uint8Array(signature));
+      function generateJWT() {
+        // HMAC-SHA256
+        const signature = sign(
+          secret,
+          btoa(JSON.stringify(jwtHeader)) + '.' + btoa(JSON.stringify(jwtPayload))
+        );
+        const jwtSignature = String.fromCharCode(...new Uint8Array(signature));
 
-      const jwt = btoa(JSON.stringify(jwtHeader)) + '.' + btoa(JSON.stringify(jwtPayload)) + '.' + btoa(jwtSignature).replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+        return btoa(JSON.stringify(jwtHeader)) + '.' + btoa(JSON.stringify(jwtPayload)) + '.' + btoa(jwtSignature).replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+      }
 
-      new QRCode(
-        document.getElementById('qrcode'),
-        {
-          text: 'gmcode' + jwt,
-          height: 512,
-          width: 512,
-        }
-      );
+      var jwt = generateJWT();
+
+      const qr = document.getElementById('qrcode');
+
+      function renderQRCode() {
+        generatedAt = new Date();
+        date_div.innerHTML = Math.floor(generatedAt.getTime() / 1000) + ' // ' + generatedAt.toLocaleString();
+
+        jwtPayload = generatePayload();
+        jwt = generateJWT();
+        qr.innerHTML = '';
+        new QRCode(
+          qr,
+          {
+            text: 'gmcode' + jwt,
+            height: 512,
+            width: 512,
+          }
+        );
+      }
+
+      renderQRCode();
+      qr.onclick = renderQRCode;
 
       const jwt_div = document.getElementById('jwt');
       jwt_div.innerHTML = jwt;
