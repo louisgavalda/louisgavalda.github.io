@@ -13,23 +13,20 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            padding: 16px;
-            background: #f5f5f5;
+            background: white;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
         }
 
         .rates-row {
             display: flex;
             gap: 0;
             align-items: stretch;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             background: white;
         }
 
@@ -37,8 +34,9 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            padding: 8px 4px;
             border-right: 1px solid #e0e0e0;
+            min-width: 0;
         }
 
         .rate-field:last-of-type {
@@ -46,18 +44,19 @@
         }
 
         .rate-label {
-            font-size: 11px;
+            font-size: 10px;
             color: #666;
             margin-bottom: 4px;
             text-align: center;
             text-transform: uppercase;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .rate-field input {
             width: 100%;
-            padding: 6px 4px;
-            font-size: 14px;
+            padding: 4px 2px;
+            font-size: 13px;
             background: white;
             border: none;
             text-align: center;
@@ -75,11 +74,12 @@
         .refresh-btn {
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 0 12px;
+            padding: 0 8px;
             line-height: 1;
             align-self: center;
+            color: #666;
         }
 
         .refresh-btn:hover {
@@ -96,8 +96,8 @@
         .currency-field {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 20px 16px;
+            gap: 12px;
+            padding: 18px 12px;
             background: white;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -107,10 +107,11 @@
         }
 
         .currency-label {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: #333;
-            min-width: 50px;
+            min-width: 40px;
+            flex-shrink: 0;
         }
 
         .currency-field input {
@@ -121,6 +122,8 @@
             border: none;
             background: white;
             color: #000;
+            min-width: 0;
+            padding-right: 0;
         }
 
         .currency-field input:focus {
@@ -139,6 +142,15 @@
 
         input[type=date] {
             cursor: default;
+        }
+
+        @media (max-width: 400px) {
+            .rate-field input {
+                font-size: 12px;
+            }
+            .currency-field input {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -161,20 +173,20 @@
                 <span class="rate-label">ARS</span>
                 <input type="number" id="rateARS" value="1015.50" step="0.01">
             </div>
-            <button class="refresh-btn" title="Mettre à jour les taux">🔄</button>
+            <button class="refresh-btn" title="Mettre à jour les taux">↻</button>
         </div>
 
         <div class="converter">
             <div class="currency-field">
-                <span class="currency-label">USD</span>
+                <span class="currency-label">U$D</span>
                 <input type="number" id="amountUSD" value="100" step="0.01">
             </div>
             <div class="currency-field">
-                <span class="currency-label">EUR</span>
+                <span class="currency-label">€</span>
                 <input type="number" id="amountEUR" value="92" step="0.01">
             </div>
             <div class="currency-field">
-                <span class="currency-label">ARS</span>
+                <span class="currency-label">AR$</span>
                 <input type="number" id="amountARS" value="101550" step="0.01">
             </div>
         </div>
