@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 16px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .rates-row {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+            margin-bottom: 24px;
+            background: white;
+        }
+
+        .rate-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .rate-field:last-of-type {
+            border-right: none;
+        }
+
+        .rate-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .rate-field input {
+            width: 100%;
+            padding: 6px 4px;
+            font-size: 14px;
+            background: white;
+            border: none;
+            text-align: center;
+        }
+
+        .rate-field input:focus {
+            outline: 2px solid #007bff;
+            border-radius: 4px;
+        }
+
+        .rate-field input:disabled {
+            color: #999;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 12px;
+            line-height: 1;
+            align-self: center;
+        }
+
+        .refresh-btn:hover {
+            opacity: 0.7;
+        }
+
+        .converter {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            background: white;
+        }
+
+        .currency-field {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 16px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .currency-field:last-child {
+            border-bottom: none;
+        }
+
+        .currency-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            min-width: 50px;
+        }
+
+        .currency-field input {
+            flex: 1;
+            font-size: 24px;
+            font-weight: 500;
+            text-align: right;
+            border: none;
+            background: white;
+            color: #000;
+        }
+
+        .currency-field input:focus {
+            outline: none;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        input[type=date] {
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="rates-row">
+            <div class="rate-field">
+                <span class="rate-label">Date</span>
+                <input type="date" id="dateRate" disabled>
+            </div>
+            <div class="rate-field">
+                <span class="rate-label">USD</span>
+                <input type="number" id="rateUSD" value="1" disabled>
+            </div>
+            <div class="rate-field">
+                <span class="rate-label">EUR</span>
+                <input type="number" id="rateEUR" value="0.92" step="0.01">
+            </div>
+            <div class="rate-field">
+                <span class="rate-label">ARS</span>
+                <input type="number" id="rateARS" value="1015.50" step="0.01">
+            </div>
+            <button class="refresh-btn" title="Mettre à jour les taux">🔄</button>
+        </div>
+
+        <div class="converter">
+            <div class="currency-field">
+                <span class="currency-label">USD</span>
+                <input type="number" id="amountUSD" value="100" step="0.01">
+            </div>
+            <div class="currency-field">
+                <span class="currency-label">EUR</span>
+                <input type="number" id="amountEUR" value="92" step="0.01">
+            </div>
+            <div class="currency-field">
+                <span class="currency-label">ARS</span>
+                <input type="number" id="amountARS" value="101550" step="0.01">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialisation de la date
+        const dateInput = document.getElementById('dateRate');
+        dateInput.valueAsDate = new Date();
+        
+        // Références aux taux
+        const rateEUR = document.getElementById('rateEUR');
+        const rateARS = document.getElementById('rateARS');
+        
+        // Références aux montants
+        const amountUSD = document.getElementById('amountUSD');
+        const amountEUR = document.getElementById('amountEUR');
+        const amountARS = document.getElementById('amountARS');
+        
+        let isUpdating = false;
+        
+        // Fonction de conversion
+        function convertFromUSD(usdAmount) {
+            const eur = parseFloat(rateEUR.value);
+            const ars = parseFloat(rateARS.value);
+            
+            amountEUR.value = (usdAmount * eur).toFixed(2);
+            amountARS.value = (usdAmount * ars).toFixed(2);
+        }
+        
+        function convertFromEUR(eurAmount) {
+            const eur = parseFloat(rateEUR.value);
+            const ars = parseFloat(rateARS.value);
+            
+            const usd = eurAmount / eur;
+            amountUSD.value = usd.toFixed(2);
+            amountARS.value = (usd * ars).toFixed(2);
+        }
+        
+        function convertFromARS(arsAmount) {
+            const eur = parseFloat(rateEUR.value);
+            const ars = parseFloat(rateARS.value);
+            
+            const usd = arsAmount / ars;
+            amountUSD.value = usd.toFixed(2);
+            amountEUR.value = (usd * eur).toFixed(2);
+        }
+        
+        // Mise à jour de la date
+        function updateDate() {
+            dateInput.valueAsDate = new Date();
+        }
+        
+        // Écouteurs sur les taux
+        rateEUR.addEventListener('input', () => {
+            if (!isUpdating) {
+                updateDate();
+                isUpdating = true;
+                convertFromUSD(parseFloat(amountUSD.value));
+                isUpdating = false;
+            }
+        });
+        
+        rateARS.addEventListener('input', () => {
+            if (!isUpdating) {
+                updateDate();
+                isUpdating = true;
+                convertFromUSD(parseFloat(amountUSD.value));
+                isUpdating = false;
+            }
+        });
+        
+        // Écouteurs sur les montants
+        amountUSD.addEventListener('input', () => {
+            if (!isUpdating) {
+                isUpdating = true;
+                convertFromUSD(parseFloat(amountUSD.value) || 0);
+                isUpdating = false;
+            }
+        });
+        
+        amountEUR.addEventListener('input', () => {
+            if (!isUpdating) {
+                isUpdating = true;
+                convertFromEUR(parseFloat(amountEUR.value) || 0);
+                isUpdating = false;
+            }
+        });
+        
+        amountARS.addEventListener('input', () => {
+            if (!isUpdating) {
+                isUpdating = true;
+                convertFromARS(parseFloat(amountARS.value) || 0);
+                isUpdating = false;
+            }
+        });
+        
+        // Bouton refresh (factice pour le moment)
+        document.querySelector('.refresh-btn').addEventListener('click', () => {
+            alert('Fonctionnalité de mise à jour via API à venir');
+            // Futur: appel AJAX pour récupérer les taux actuels
+        });
+    </script>
+</body>
+</html>
